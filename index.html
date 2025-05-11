@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Dashboard - Yasin Ullah</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #5c6bc0;
+            --accent: #ffd54f;
+            --dark: #121212;
+            --light: #f5f5f5;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --text-light: #ffffff;
+            --text-dark: #212121;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            transition: var(--transition);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23273036" fill-opacity="0.3" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,202.7C1248,213,1344,171,1392,149.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: bottom;
+            background-size: cover;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard {
+                grid-template-columns: 250px 1fr;
+            }
+        }
+
+        .sidebar {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-light);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(92, 107, 192, 0.2);
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        .card-action {
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .timer-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .time-card {
+            background: linear-gradient(135deg, rgba(92, 107, 192, 0.2), rgba(26, 35, 126, 0.4));
+            border-radius: var(--border-radius);
+            padding: 15px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .time-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+
+        .btn-accent:hover {
+            opacity: 0.9;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .grid-3 {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .day-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: rgba(26, 35, 126, 0.2);
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .day-card:hover {
+            background-color: rgba(26, 35, 126, 0.4);
+        }
+
+        .day-card.completed {
+            border-left: 4px solid var(--success);
+        }
+
+        .dua-card {
+            background: linear-gradient(135deg, rgba(26, 35, 126, 0.4), rgba(92, 107, 192, 0.2));
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dua-card::before {
+            content: """;
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            font-size: 120px;
+            color: rgba(255, 255, 255, 0.05);
+            font-family: serif;
+        }
+
+        .dua-arabic {
+            font-size: 1.2rem;
+            text-align: right;
+            margin-bottom: 10px;
+            font-family: 'Traditional Arabic', serif;
+        }
+
+        .dua-translation {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .dua-reference {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            opacity: 1;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .calendar-date {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: var(--border-radius);
+            background-color: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calendar-date:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calendar-date.active {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+
+        .calendar-date.fasted {
+            border: 2px solid var(--success);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background-color: var(--dark);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        .close-modal {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        .badge-success {
+            background-color: var(--success);
+            color: var(--text-light);
+        }
+
+        .badge-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .badge-accent {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .moon-stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        .moon {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ffd54f;
+            box-shadow: 0 0 20px #ffd54f80;
+        }
+
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--dark);
+            color: var(--text-light);
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .light-theme {
+            --dark: #f5f5f5;
+            --light: #ffffff;
+            --text-light: #212121;
+            --text-dark: #f5f5f5;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .sidebar, .theme-toggle, .toast, .modal {
+                display: none;
+            }
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                width: 100%;
+            }
+            .card {
+                background: white;
+                color: black;
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+            .card-title {
+                color: black;
+            }
+        }
+		.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+    </style>
+</head>
+<body>
+<div class="moon-stars" id="moonStars"></div>
+
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-sun"></i>
+    </button>
+    
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="logo">
+                    <i class="fas fa-moon"></i>
+                    <h1>Ramadan Dashboard</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-page="dashboard">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="daily-log">
+                            <i class="fas fa-book"></i> Daily Log
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="quran-tracker">
+                            <i class="fas fa-quran"></i> Quran Tracker
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="prayer-times">
+                            <i class="fas fa-clock"></i> Prayer Times
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="duas">
+                            <i class="fas fa-pray"></i> Duas Collection
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="goals">
+                            <i class="fas fa-bullseye"></i> Goals
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="calendar">
+                            <i class="fas fa-calendar-alt"></i> Calendar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="reflection">
+                            <i class="fas fa-journal-whills"></i> Reflections
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+    
+            <div class="main-content">
+                <!-- Dashboard Page -->
+                <div class="page active" id="dashboard-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Today's Overview</h3>
+                            <span class="card-action" id="todayDate"></span>
+                        </div>
+                        <div class="timer-container">
+                            <div class="time-card">
+                                <div class="time-value" id="iftarCountdownHours">--</div>
+                                <div class="time-label">Hours until Iftar</div>
+                            </div>
+                            <div class="time-card">
+                                <div class="time-value" id="iftarCountdownMinutes">--</div>
+                                <div class="time-label">Minutes</div>
+                            </div>
+                            <div class="time-card">
+                                <div class="time-value" id="iftarCountdownSeconds">--</div>
+                                <div class="time-label">Seconds</div>
+                            </div>
+                            <div class="time-card">
+                                <div class="time-value" id="ramadanDay">--</div>
+                                <div class="time-label">Ramadan Day</div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Today's Schedule</h3>
+                                <span class="card-action" id="editSchedule">Edit</span>
+                            </div>
+                            <div class="schedule-container">
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Suhoor</strong>
+                                        <p id="suhoorTime">04:30 AM</p>
+                                    </div>
+                                    <i class="fas fa-utensils" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Fajr</strong>
+                                        <p id="fajrTime">05:15 AM</p>
+                                    </div>
+                                    <i class="fas fa-sun" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Iftar</strong>
+                                        <p id="iftarTime">06:45 PM</p>
+                                    </div>
+                                    <i class="fas fa-moon" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Taraweeh</strong>
+                                        <p id="taraweehTime">08:00 PM</p>
+                                    </div>
+                                    <i class="fas fa-mosque" style="color: var(--accent);"></i>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Goal Progress</h3>
+                                <span class="card-action" id="viewAllGoals">View All</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-title">
+                                    <span>Quran Reading</span>
+                                    <span id="quranProgress">10/30 Juz</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="quranProgressBar" style="width: 33%;"></div>
+                                </div>
+    
+                                <div class="progress-title">
+                                    <span>Taraweeh Attendance</span>
+                                    <span id="taraweehProgress">8/30 Days</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="taraweehProgressBar" style="width: 27%;"></div>
+                                </div>
+    
+                                <div class="progress-title">
+                                    <span>Charity Goal</span>
+                                    <span id="charityProgress">$350/$1000</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="charityProgressBar" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Dua of the Day</h3>
+                                <span class="card-action" id="newDua">New Dua</span>
+                            </div>
+                            <div class="dua-card">
+                                <div class="dua-arabic" id="duaArabic">اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ</div>
+                                <div class="dua-translation" id="duaTranslation">O Allah, I ask You for Paradise and seek refuge in You from the Fire.</div>
+                                <div class="dua-reference" id="duaReference">Sunan Ibn Majah 4/4340</div>
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Daily Log Status</h3>
+                                <span class="card-action" id="logToday">Log Today</span>
+                            </div>
+                            <div class="log-status">
+                                <div class="day-card completed">
+                                    <div>
+                                        <strong>Fasting</strong>
+                                        <p>Completed</p>
+                                    </div>
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Quran Reading</strong>
+                                        <p>2 pages remaining</p>
+                                    </div>
+                                    <i class="fas fa-book-open" style="color: var(--warning);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Taraweeh</strong>
+                                        <p>Not logged yet</p>
+                                    </div>
+                                    <i class="fas fa-times-circle" style="color: var(--danger);"></i>
+                                </div>
+                                <div class="day-card completed">
+                                    <div>
+                                        <strong>Daily Charity</strong>
+                                        <p>$10 donated</p>
+                                    </div>
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Daily Log Page -->
+                <div class="page" id="daily-log-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Daily Log</h3>
+                            <span class="card-action" id="logHistoryBtn">View History</span>
+                        </div>
+                        <form id="dailyLogForm">
+                            <div class="form-group">
+                                <label for="logDate">Date</label>
+                                <input type="date" id="logDate" name="logDate">
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label for="fastingStatus">Fasting Status</label>
+                                    <select id="fastingStatus" name="fastingStatus">
+                                        <option value="completed">Completed</option>
+                                        <option value="partial">Partial</option>
+                                        <option value="exempted">Exempted</option>
+                                        <option value="missed">Missed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fastingNote">Notes (if applicable)</label>
+                                    <input type="text" id="fastingNote" name="fastingNote" placeholder="Reason if exempted or missed">
+                                </div>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label for="suhoorTime">Suhoor Time</label>
+                                    <input type="time" id="suhoorTimeInput" name="suhoorTime">
+                                </div>
+                                <div class="form-group">
+                                    <label for="iftarTimeInput">Iftar Time</label>
+                                    <input type="time" id="iftarTimeInput" name="iftarTime">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="quranReading">Quran Reading</label>
+                                <div class="grid-2">
+                                    <div>
+                                        <input type="number" id="quranJuz" name="quranJuz" placeholder="Juz" min="0" max="30">
+                                    </div>
+                                    <div>
+                                        <input type="number" id="quranPages" name="quranPages" placeholder="Pages" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label for="taraweehStatus">Taraweeh Prayer</label>
+                                    <select id="taraweehStatus" name="taraweehStatus">
+                                        <option value="completed">Completed</option>
+                                        <option value="partial">Partial</option>
+                                        <option value="missed">Missed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="taraweehRakaat">Rakaat Completed</label>
+                                    <input type="number" id="taraweehRakaat" name="taraweehRakaat" min="0" max="20" value="8">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="charityAmount">Charity Amount</label>
+                                <input type="number" id="charityAmount" name="charityAmount" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="moodRating">Mood Rating</label>
+                                <select id="moodRating" name="moodRating">
+                                    <option value="5">Excellent (5)</option>
+                                    <option value="4">Good (4)</option>
+                                    <option value="3" selected>Average (3)</option>
+                                    <option value="2">Below Average (2)</option>
+                                    <option value="1">Poor (1)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reflection">Daily Reflection</label>
+                                <textarea id="reflection" name="reflection" rows="4" placeholder="What did you learn today? How did you feel about your worship?"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-accent" id="saveLogBtn">Save Log</button>
+                        </form>
+                    </div>
+                </div>
+    
+                <!-- Quran Tracker Page -->
+                <div class="page" id="quran-tracker-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Quran Reading Tracker</h3>
+                            <span class="card-action" id="quranResetBtn">Reset</span>
+                        </div>
+                        <div class="grid-2">
+                            <div>
+                                <div class="progress-container">
+                                    <div class="progress-title">
+                                        <span>Overall Progress</span>
+                                        <span id="quranOverallProgress">33%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="quranOverallProgressBar" style="width: 33%;"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quranGoalType">Reading Goal Type</label>
+                                    <select id="quranGoalType" name="quranGoalType">
+                                        <option value="complete">Complete Quran Once</option>
+                                        <option value="juz">Read Specific Juz</option>
+                                        <option value="pages">Read Specific Pages</option>
+                                        <option value="multiple">Complete Quran Multiple Times</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quranGoalValue">Goal Value</label>
+                                    <input type="number" id="quranGoalValue" name="quranGoalValue" value="1" min="1">
+                                </div>
+                                <button class="btn btn-primary" id="updateQuranGoalBtn">Update Goal</button>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label>Quick Log Reading</label>
+                                    <div class="grid-2">
+                                        <div>
+                                            <input type="number" id="quickLogJuz" name="quickLogJuz" placeholder="Juz" min="0" max="30">
+                                        </div>
+                                        <div>
+                                            <input type="number" id="quickLogPages" name="quickLogPages" placeholder="Pages" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-accent" id="quickLogQuranBtn">Log Reading</button>
+                                <div class="form-group" style="margin-top: 20px;">
+                                    <label>Last 5 Readings</label>
+                                    <div id="lastReadingsList">
+                                        <div class="day-card">
+                                            <div>
+                                                <strong>Today</strong>
+                                                <p>Juz 2 (10 pages)</p>
+                                            </div>
+                                            <span class="badge badge-accent">+10 pages</span>
+                                        </div>
+                                        <div class="day-card">
+                                            <div>
+                                                <strong>Yesterday</strong>
+                                                <p>Juz 1 (20 pages)</p>
+                                            </div>
+                                            <span class="badge badge-accent">+20 pages</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <div class="tabs">
+                                <div class="tab active" data-tab="juzTracker">Juz Tracker</div>
+                                <div class="tab" data-tab="surahTracker">Surah Tracker</div>
+                            </div>
+                            <div class="tab-content active" id="juzTracker">
+                                <div class="grid-3" id="juzGrid">
+                                    <!-- Juz grid will be generated here -->
+                                </div>
+                            </div>
+                            <div class="tab-content" id="surahTracker">
+                                <div class="grid-3" id="surahGrid">
+                                    <!-- Surah grid will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Prayer Times Page -->
+                <div class="page" id="prayer-times-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Prayer Times</h3>
+                            <span class="card-action" id="updateLocationBtn">Update Location</span>
+                        </div>
+                        <div class="grid-2">
+                            <div>
+                                <div class="form-group">
+                                    <label for="prayerDate">Date</label>
+                                    <input type="date" id="prayerDate" name="prayerDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="calculationMethod">Calculation Method</label>
+                                    <select id="calculationMethod" name="calculationMethod">
+                                        <option value="MWL">Muslim World League</option>
+                                        <option value="ISNA">Islamic Society of North America</option>
+                                        <option value="Egypt">Egyptian General Authority of Survey</option>
+                                        <option value="Makkah">Umm al-Qura University, Makkah</option>
+                                        <option value="Karachi">University of Islamic Sciences, Karachi</option>
+                                        <option value="Tehran">Institute of Geophysics, University of Tehran</option>
+                                        <option value="Jafari">Shia Ithna Ashari, Leva Institute, Qum</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="madhab">Madhab (for Asr)</label>
+                                    <select id="madhab" name="madhab">
+                                        <option value="Shafi">Shafi, Maliki, Hanbali</option>
+                                        <option value="Hanafi">Hanafi</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" id="updatePrayerSettingsBtn">Update Settings</button>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 15px;">Today's Prayer Times</h4>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Fajr</strong>
+                                        <p id="fajrTimeDisplay">05:15 AM</p>
+                                    </div>
+                                    <i class="fas fa-sun" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Dhuhr</strong>
+                                        <p id="dhuhrTimeDisplay">12:30 PM</p>
+                                    </div>
+                                    <i class="fas fa-sun" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Asr</strong>
+                                        <p id="asrTimeDisplay">03:45 PM</p>
+                                    </div>
+                                    <i class="fas fa-sun" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Maghrib (Iftar)</strong>
+                                        <p id="maghribTimeDisplay">06:45 PM</p>
+                                    </div>
+                                    <i class="fas fa-moon" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="day-card">
+                                    <div>
+                                        <strong>Isha</strong>
+                                        <p id="ishaTimeDisplay">08:15 PM</p>
+                                    </div>
+                                    <i class="fas fa-moon" style="color: var(--accent);"></i>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div style="margin-top: 20px;">
+                            <div class="form-group">
+                                <label>Manual Prayer Time Setup</label>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label for="manualSuhoor">Suhoor</label>
+                                        <input type="time" id="manualSuhoor" name="manualSuhoor">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="manualFajr">Fajr</label>
+                                        <input type="time" id="manualFajr" name="manualFajr">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="manualDhuhr">Dhuhr</label>
+                                        <input type="time" id="manualDhuhr" name="manualDhuhr">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="manualAsr">Asr</label>
+                                        <input type="time" id="manualAsr" name="manualAsr">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="manualMaghrib">Maghrib (Iftar)</label>
+                                        <input type="time" id="manualMaghrib" name="manualMaghrib">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="manualIsha">Isha</label>
+                                        <input type="time" id="manualIsha" name="manualIsha">
+                                    </div>
+                                </div>
+                                <button class="btn btn-accent" id="saveManualTimesBtn">Save Manual Times</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Duas Collection Page -->
+                <div class="page" id="duas-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ramadan Duas Collection</h3>
+                            <span class="card-action" id="addDuaBtn">Add New</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="duaSearch">Search Duas</label>
+                            <input type="text" id="duaSearch" name="duaSearch" placeholder="Search by keyword...">
+                        </div>
+                        <div class="tabs">
+                            <div class="tab active" data-tab="ramadanDuas">Ramadan</div>
+                            <div class="tab" data-tab="fasting">Fasting</div>
+                            <div class="tab" data-tab="laylatul">Laylatul Qadr</div>
+                            <div class="tab" data-tab="eidDuas">Eid</div>
+                            <div class="tab" data-tab="favorite">Favorites</div>
+                        </div>
+                        <div class="tab-content active" id="ramadanDuas">
+                            <div class="dua-card">
+                                <div class="dua-arabic">اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ</div>
+                                <div class="dua-translation">O Allah! I fasted for You and I break my fast with Your sustenance.</div>
+                                <div class="dua-reference">Abu Dawud 2/306</div>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <button class="btn btn-primary" data-action="favorite"><i class="far fa-heart"></i> Favorite</button>
+                                </div>
+                            </div>
+                            <div class="dua-card">
+                                <div class="dua-arabic">ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ</div>
+                                <div class="dua-translation">The thirst is gone, the veins are moistened, and the reward is confirmed, if Allah wills.</div>
+                                <div class="dua-reference">Abu Dawud 2/306</div>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <button class="btn btn-primary" data-action="favorite"><i class="far fa-heart"></i> Favorite</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="fasting">
+                            <div class="dua-card">
+                                <div class="dua-arabic">اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي</div>
+                                <div class="dua-translation">O Allah, I ask You by Your mercy, which encompasses all things, that You forgive me.</div>
+                                <div class="dua-reference">Ibn Majah 2/1258</div>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <button class="btn btn-primary" data-action="favorite"><i class="far fa-heart"></i> Favorite</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="laylatul">
+                            <div class="dua-card">
+                                <div class="dua-arabic">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
+                                <div class="dua-translation">O Allah, You are forgiving and love forgiveness, so forgive me.</div>
+                                <div class="dua-reference">Tirmidhi 5/534</div>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <button class="btn btn-primary" data-action="favorite"><i class="far fa-heart"></i> Favorite</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="eidDuas">
+                            <div class="dua-card">
+                                <div class="dua-arabic">اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، وَلِلَّهِ الْحَمْدُ</div>
+                                <div class="dua-translation">Allah is the Greatest, Allah is the Greatest, Allah is the Greatest. There is no god but Allah. Allah is the Greatest, Allah is the Greatest, and to Allah belongs all praise.</div>
+                                <div class="dua-reference">Takbeer of Eid</div>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <button class="btn btn-primary" data-action="favorite"><i class="far fa-heart"></i> Favorite</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="favorite">
+                            <p style="text-align: center; padding: 20px;">Your favorite duas will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Goals Page -->
+                <div class="page" id="goals-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ramadan Goals</h3>
+                            <span class="card-action" id="addGoalBtn">Add Goal</span>
+                        </div>
+                        <div class="grid-2">
+                            <div>
+                                <div class="form-group">
+                                    <label for="goalTitle">Goal Title</label>
+                                    <input type="text" id="goalTitle" name="goalTitle" placeholder="e.g., Complete Quran once">
+                                </div>
+                                <div class="form-group">
+                                    <label for="goalCategory">Category</label>
+                                    <select id="goalCategory" name="goalCategory">
+                                        <option value="quran">Quran Reading</option>
+                                        <option value="prayer">Prayer</option>
+                                        <option value="charity">Charity</option>
+                                        <option value="personal">Personal</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="goalTarget">Target Value</label>
+                                    <input type="number" id="goalTarget" name="goalTarget" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="goalUnit">Unit</label>
+                                    <input type="text" id="goalUnit" name="goalUnit" placeholder="e.g., Juz, Days, $">
+                                </div>
+                                <button class="btn btn-accent" id="saveGoalBtn">Save Goal</button>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 15px;">Your Goals</h4>
+                                <div id="goalsList">
+                                    <div class="day-card">
+                                        <div>
+                                            <strong>Complete Quran Once</strong>
+                                            <div class="progress-bar" style="margin: 5px 0;">
+                                                <div class="progress-fill" style="width: 33%;"></div>
+                                            </div>
+                                            <p>10/30 Juz</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge badge-primary">33%</span>
+                                        </div>
+                                    </div>
+                                    <div class="day-card">
+                                        <div>
+                                            <strong>Attend All Taraweeh</strong>
+                                            <div class="progress-bar" style="margin: 5px 0;">
+                                                <div class="progress-fill" style="width: 27%;"></div>
+                                            </div>
+                                            <p>8/30 Days</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge badge-primary">27%</span>
+                                        </div>
+                                    </div>
+                                    <div class="day-card">
+                                        <div>
+                                            <strong>Charity Goal</strong>
+                                            <div class="progress-bar" style="margin: 5px 0;">
+                                                <div class="progress-fill" style="width: 35%;"></div>
+                                            </div>
+                                            <p>$350/$1000</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge badge-primary">35%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Calendar Page -->
+                <div class="page" id="calendar-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ramadan Calendar</h3>
+                            <div>
+                                <span class="card-action" id="prevMonthBtn"><i class="fas fa-chevron-left"></i></span>
+                                <span id="currentMonthYear" style="margin: 0 10px;">Ramadan 1445</span>
+                                <span class="card-action" id="nextMonthBtn"><i class="fas fa-chevron-right"></i></span>
+                            </div>
+                        </div>
+                        <div class="calendar-header">
+                            <div class="calendar-day">Sun</div>
+                            <div class="calendar-day">Mon</div>
+                            <div class="calendar-day">Tue</div>
+                            <div class="calendar-day">Wed</div>
+                            <div class="calendar-day">Thu</div>
+                            <div class="calendar-day">Fri</div>
+                            <div class="calendar-day">Sat</div>
+                        </div>
+                        <div class="calendar" id="calendarDays">
+                            <!-- Calendar days will be generated here -->
+                        </div>
+    
+                        <div style="margin-top: 20px;">
+                            <div class="card" id="dayDetailCard">
+                                <div class="card-header">
+                                    <h3 class="card-title" id="selectedDateTitle">Day Details</h3>
+                                </div>
+                                <div id="dayDetailContent">
+                                    <p style="text-align: center; padding: 20px;">Select a day to view details.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Reflection Page -->
+                <div class="page" id="reflection-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ramadan Reflections</h3>
+                            <span class="card-action" id="viewAllReflectionsBtn">View All</span>
+                        </div>
+                        <div class="tabs">
+                            <div class="tab active" data-tab="dailyReflection">Daily Reflection</div>
+                            <div class="tab" data-tab="weeklyReflection">Weekly Reflection</div>
+                            <div class="tab" data-tab="postRamadan">Post-Ramadan</div>
+                        </div>
+                        <div class="tab-content active" id="dailyReflection">
+                            <div class="form-group">
+                                <label for="reflectionDate">Date</label>
+                                <input type="date" id="reflectionDate" name="reflectionDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="dailyReflectionText">Today's Reflection</label>
+                                <textarea id="dailyReflectionText" name="dailyReflectionText" rows="6" placeholder="What did you learn today? How did you feel about your worship? Any spiritual realizations?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="reflectionMood">Mood</label>
+                                <select id="reflectionMood" name="reflectionMood">
+                                    <option value="grateful">Grateful</option>
+                                    <option value="inspired">Inspired</option>
+                                    <option value="peaceful">Peaceful</option>
+                                    <option value="challenged">Challenged</option>
+                                    <option value="stressed">Stressed</option>
+                                    <option value="tired">Tired</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reflectionLearning">Key Learning</label>
+                                <input type="text" id="reflectionLearning" name="reflectionLearning" placeholder="Main insight from today">
+                            </div>
+                            <button class="btn btn-accent" id="saveDailyReflectionBtn">Save Reflection</button>
+                        </div>
+                        <div class="tab-content" id="weeklyReflection">
+                            <div class="form-group">
+                                <label for="weekNumber">Week</label>
+                                <select id="weekNumber" name="weekNumber">
+                                    <option value="1">Week 1 (Ramadan 1-7)</option>
+                                    <option value="2">Week 2 (Ramadan 8-14)</option>
+                                    <option value="3">Week 3 (Ramadan 15-21)</option>
+                                    <option value="4">Week 4 (Ramadan 22-30)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="weeklyReflectionText">Weekly Reflection</label>
+                                <textarea id="weeklyReflectionText" name="weeklyReflectionText" rows="8" placeholder="How was your overall experience this week? What challenges did you face? What improvements did you notice?"></textarea>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label for="weeklyHighlight">Highlight of the Week</label>
+                                    <input type="text" id="weeklyHighlight" name="weeklyHighlight">
+                                </div>
+                                <div class="form-group">
+                                    <label for="weeklyChallenge">Biggest Challenge</label>
+                                    <input type="text" id="weeklyChallenge" name="weeklyChallenge">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="weeklyGoalProgress">Goal Progress</label>
+                                <textarea id="weeklyGoalProgress" name="weeklyGoalProgress" rows="4" placeholder="How are you progressing with your Ramadan goals?"></textarea>
+                            </div>
+                            <button class="btn btn-accent" id="saveWeeklyReflectionBtn">Save Weekly Reflection</button>
+                        </div>
+                        <div class="tab-content" id="postRamadan">
+                            <div class="form-group">
+                                <label for="overallExperience">Overall Ramadan Experience</label>
+                                <textarea id="overallExperience" name="overallExperience" rows="6" placeholder="Describe your overall Ramadan experience this year..."></textarea>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label for="ramadanHighlights">Highlights</label>
+                                    <textarea id="ramadanHighlights" name="ramadanHighlights" rows="4" placeholder="Best moments and achievements..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ramadanChallenges">Challenges</label>
+                                    <textarea id="ramadanChallenges" name="ramadanChallenges" rows="4" placeholder="Difficulties faced..."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="goalsReview">Goals Review</label>
+                                <textarea id="goalsReview" name="goalsReview" rows="4" placeholder="How did you do with your Ramadan goals?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="lessonsLearned">Lessons Learned</label>
+                                <textarea id="lessonsLearned" name="lessonsLearned" rows="4" placeholder="What did you learn this Ramadan?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="postRamadanPlan">Post-Ramadan Plan</label>
+                                <textarea id="postRamadanPlan" name="postRamadanPlan" rows="4" placeholder="How will you maintain good habits after Ramadan?"></textarea>
+                            </div>
+                            <button class="btn btn-accent" id="savePostRamadanBtn">Save Reflection</button>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Settings Page -->
+                <div class="page" id="settings-page">
+                    <div class="card">
+					
+<div class="card-header">
+                            <h3 class="card-title">Settings</h3>
+                            <span class="card-action" id="saveSettingsBtn">Save</span>
+                        </div>
+                        <div class="grid-2">
+                            <div>
+                                <div class="form-group">
+                                    <label for="darkModeToggle">Dark Mode</label>
+                                    <select id="darkModeToggle" name="darkModeToggle">
+                                        <option value="auto">Auto (System)</option>
+                                        <option value="dark" selected>Dark</option>
+                                        <option value="light">Light</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ramadanStartDate">Ramadan Start Date</label>
+                                    <input type="date" id="ramadanStartDate" name="ramadanStartDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="languageSetting">Language</label>
+                                    <select id="languageSetting" name="languageSetting">
+                                        <option value="en" selected>English</option>
+                                        <option value="ar">Arabic</option>
+                                        <option value="ur">Urdu</option>
+                                        <option value="fr">French</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="notificationsToggle">Notifications</label>
+                                    <select id="notificationsToggle" name="notificationsToggle">
+                                        <option value="enabled">Enabled</option>
+                                        <option value="disabled">Disabled</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label for="userLocation">Location</label>
+                                    <input type="text" id="userLocation" name="userLocation" placeholder="e.g., New York, USA">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataExport">Export Data</label>
+                                    <button class="btn btn-primary" id="exportDataBtn">Export as JSON</button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataImport">Import Data</label>
+                                    <input type="file" id="importFile" name="importFile" accept=".json">
+                                    <button class="btn btn-primary" id="importDataBtn" style="margin-top: 10px;">Import</button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="resetData">Reset Data</label>
+                                    <button class="btn btn-accent" id="resetDataBtn">Reset All Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="logHistoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Daily Log History</h3>
+                <span class="close-modal" data-modal="logHistoryModal">&times;</span>
+            </div>
+            <div id="logHistoryContent">
+                <!-- Log history will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="addDuaModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Dua</h3>
+                <span class="close-modal" data-modal="addDuaModal">&times;</span>
+            </div>
+            <form id="addDuaForm">
+                <div class="form-group">
+                    <label for="duaArabicText">Arabic Text</label>
+                    <textarea id="duaArabicText" name="duaArabicText" rows="4" dir="rtl"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="duaTranslationText">Translation</label>
+                    <textarea id="duaTranslationText" name="duaTranslationText" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="duaReferenceText">Reference</label>
+                    <input type="text" id="duaReferenceText" name="duaReferenceText">
+                </div>
+                <div class="form-group">
+                    <label for="duaCategory">Category</label>
+                    <select id="duaCategory" name="duaCategory">
+                        <option value="ramadanDuas">Ramadan</option>
+                        <option value="fasting">Fasting</option>
+                        <option value="laylatul">Laylatul Qadr</option>
+                        <option value="eidDuas">Eid</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-accent">Save Dua</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="viewAllReflectionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">All Reflections</h3>
+                <span class="close-modal" data-modal="viewAllReflectionsModal">&times;</span>
+            </div>
+            <div id="allReflectionsContent">
+                <!-- Reflections will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // IndexedDB Setup
+        const dbName = 'ramadanDashboardDB';
+        const dbVersion = 1;
+        let db;
+    
+        const initDB = () => {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, dbVersion);
+                
+                request.onerror = event => {
+                    console.error('IndexedDB error:', event.target.error);
+                    reject('Error opening database');
+                };
+                
+                request.onsuccess = event => {
+                    db = event.target.result;
+                    console.log('Database opened successfully');
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = event => {
+                    const db = event.target.result;
+                    
+                    // Create object stores
+                    if (!db.objectStoreNames.contains('dailyLogs')) {
+                        const dailyLogsStore = db.createObjectStore('dailyLogs', { keyPath: 'date' });
+                        dailyLogsStore.createIndex('date', 'date', { unique: true });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('quranProgress')) {
+                        db.createObjectStore('quranProgress', { keyPath: 'date' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('goals')) {
+                        db.createObjectStore('goals', { keyPath: 'id', autoIncrement: true });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('prayerTimes')) {
+                        db.createObjectStore('prayerTimes', { keyPath: 'date' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('duas')) {
+                        db.createObjectStore('duas', { keyPath: 'id', autoIncrement: true });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('reflections')) {
+                        db.createObjectStore('reflections', { keyPath: 'id', autoIncrement: true });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('settings')) {
+                        db.createObjectStore('settings', { keyPath: 'id' });
+                    }
+                };
+            });
+        };
+    
+        // Helper function to save data to IndexedDB
+        const saveToDb = (storeName, data) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put(data);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        };
+    
+        // Helper function to get data from IndexedDB
+        const getFromDb = (storeName, key) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = key ? store.get(key) : store.getAll();
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        };
+    
+        // Helper function to delete data from IndexedDB
+        const deleteFromDb = (storeName, key) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        };
+    
+        // UI functions
+        const $ = selector => document.querySelector(selector);
+        const $$ = selector => document.querySelectorAll(selector);
+    
+        // Navigation
+        const setActivePage = (pageId) => {
+            $$('.page').forEach(page => page.classList.remove('active'));
+            $$('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            $(`#${pageId}-page`).classList.add('active');
+            $(`.nav-link[data-page="${pageId}"]`).classList.add('active');
+        };
+    
+        $$('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const pageId = link.getAttribute('data-page');
+        setActivePage(pageId);
+    });
+});
+    
+        // Tab functionality
+        $$('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabGroup = tab.parentElement;
+                const tabContentId = tab.getAttribute('data-tab');
+                
+                // Remove active class from all tabs in this group
+                tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all tab contents related to this tab group
+                const tabContents = tabGroup.nextElementSibling;
+                if (tabContents) {
+                    tabContents.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show the selected tab content
+                    $(`#${tabContentId}`).classList.add('active');
+                }
+            });
+        });
+    
+        // Modal functionality
+        const openModal = (modalId) => {
+            $(`#${modalId}`).classList.add('active');
+        };
+    
+        const closeModal = (modalId) => {
+            $(`#${modalId}`).classList.remove('active');
+        };
+    
+        $$('.close-modal').forEach(closeBtn => {
+            closeBtn.addEventListener('click', () => {
+                const modalId = closeBtn.getAttribute('data-modal');
+                closeModal(modalId);
+            });
+        });
+    
+        // Buttons to open modals
+        $('#logHistoryBtn').addEventListener('click', () => openModal('logHistoryModal'));
+        $('#addDuaBtn').addEventListener('click', () => openModal('addDuaModal'));
+        $('#viewAllReflectionsBtn').addEventListener('click', () => openModal('viewAllReflectionsModal'));
+    
+        // Toast notifications
+        const showToast = (message, type = 'success') => {
+            const toast = $('#toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        };
+    
+        // Theme toggle
+        const toggleTheme = () => {
+            const currentTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+            if (currentTheme === 'dark') {
+                document.body.classList.add('light-theme');
+                $('#themeToggle i').className = 'fas fa-moon';
+            } else {
+                document.body.classList.remove('light-theme');
+                $('#themeToggle i').className = 'fas fa-sun';
+            }
+            saveToDb('settings', { id: 'theme', value: currentTheme === 'dark' ? 'light' : 'dark' });
+        };
+    
+        $('#themeToggle').addEventListener('click', toggleTheme);
+    
+        // Create stars background
+        const createStars = () => {
+            const moonStars = $('#moonStars');
+            moonStars.innerHTML = '';
+            
+            // Create moon
+            const moon = document.createElement('div');
+            moon.className = 'moon';
+            moonStars.appendChild(moon);
+            
+            // Create stars
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                moonStars.appendChild(star);
+            }
+        };
+    
+        // Initialize Juz grid
+        const initJuzGrid = () => {
+            const juzGrid = $('#juzGrid');
+            juzGrid.innerHTML = '';
+            
+            for (let i = 1; i <= 30; i++) {
+                const juzCard = document.createElement('div');
+                juzCard.className = 'day-card';
+                juzCard.innerHTML = `
+                    <div>
+                        <strong>Juz ${i}</strong>
+                        <p id="juz-${i}-pages">0/20 pages</p>
+                    </div>
+                    <span class="badge badge-primary" id="juz-${i}-percent">0%</span>
+                `;
+                juzGrid.appendChild(juzCard);
+            }
+        };
+    
+        // Initialize Surah grid
+        const initSurahGrid = () => {
+            const surahGrid = $('#surahGrid');
+            surahGrid.innerHTML = '';
+            
+            const surahs = [
+                "Al-Fatihah", "Al-Baqarah", "Ali 'Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", "Al-A'raf", 
+                "Al-Anfal", "At-Tawbah", "Yunus", "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr", "An-Nahl", 
+                "Al-Isra", "Al-Kahf", "Maryam", "Ta-Ha", "Al-Anbiya", "Al-Hajj", "Al-Mu'minun", "An-Nur", 
+                "Al-Furqan", "Ash-Shu'ara", "An-Naml", "Al-Qasas", "Al-'Ankabut", "Ar-Rum", "Luqman", 
+                "As-Sajdah", "Al-Ahzab", "Saba", "Fatir", "Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir", 
+                "Fussilat", "Ash-Shuraa", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah", "Al-Ahqaf", "Muhammad", 
+                "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", 
+                "Al-Waqi'ah", "Al-Hadid", "Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", 
+                "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", 
+                "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", 
+                "Al-Mursalat", "An-Naba", "An-Nazi'at", "'Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", 
+                "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", 
+                "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-'Alaq", "Al-Qadr", "Al-Bayyinah", 
+                "Az-Zalzalah", "Al-'Adiyat", "Al-Qari'ah", "At-Takathur", "Al-'Asr", "Al-Humazah", "Al-Fil", 
+                "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", 
+                "An-Nas"
+            ];
+            
+            for (let i = 0; i < surahs.length; i++) {
+                const surahCard = document.createElement('div');
+                surahCard.className = 'day-card';
+                surahCard.innerHTML = `
+                    <div>
+                        <strong>${i+1}. ${surahs[i]}</strong>
+                        <p id="surah-${i+1}-status">Not read</p>
+                    </div>
+                    <span class="badge badge-primary" id="surah-${i+1}-badge">0%</span>
+                `;
+                surahGrid.appendChild(surahCard);
+            }
+        };
+    
+        // Initialize Calendar
+        const initCalendar = () => {
+            const calendarDays = $('#calendarDays');
+            calendarDays.innerHTML = '';
+            
+            // Example: Generate 30 days of Ramadan starting from a Sunday
+            const startDay = 0; // Sunday
+            const totalDays = 30;
+            
+            // Add empty cells for days before the start day
+            for (let i = 0; i < startDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-date';
+                emptyCell.style.visibility = 'hidden';
+                calendarDays.appendChild(emptyCell);
+            }
+            
+            // Add day cells
+            for (let i = 1; i <= totalDays; i++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-date';
+                dayCell.setAttribute('data-day', i);
+                dayCell.innerHTML = `
+                    <div>${i}</div>
+                    <small>Ramadan</small>
+                `;
+                
+                dayCell.addEventListener('click', () => {
+                    $$('.calendar-date').forEach(cell => cell.classList.remove('active'));
+                    dayCell.classList.add('active');
+                    
+                    // Update day detail card
+                    $('#selectedDateTitle').textContent = `Ramadan ${i}`;
+                    $('#dayDetailContent').innerHTML = `
+                        <div class="day-card">
+                            <div>
+                                <strong>Fasting Status</strong>
+                                <p id="cal-fasting-status-${i}">Completed</p>
+                            </div>
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        </div>
+                        <div class="day-card">
+                            <div>
+                                <strong>Quran Reading</strong>
+                                <p id="cal-quran-status-${i}">Juz 1 (5 pages)</p>
+                            </div>
+                            <span class="badge badge-accent">5 pages</span>
+                        </div>
+                        <div class="day-card">
+                            <div>
+                                <strong>Taraweeh</strong>
+                                <p id="cal-taraweeh-status-${i}">8 rakaat</p>
+                            </div>
+                            <i class="fas fa-mosque" style="color: var(--accent);"></i>
+                        </div>
+                        <div class="form-group">
+                            <label>Reflection</label>
+                            <p id="cal-reflection-${i}">Alhamdulillah for another blessed day of Ramadan. I felt more focused during prayers today.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="editDayLog(${i})">Edit Log</button>
+                    `;
+                });
+                
+                calendarDays.appendChild(dayCell);
+            }
+        };
+    
+        // Iftar Countdown Timer
+        const updateIftarCountdown = () => {
+            // Example: Iftar at 6:45 PM
+            const now = new Date();
+            let iftarTime = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+                18, // 6 PM
+                45, // 45 minutes
+                0
+            );
+            
+            // If it's past iftar time, set for tomorrow
+            if (now > iftarTime) {
+                iftarTime.setDate(iftarTime.getDate() + 1);
+            }
+            
+            const diff = iftarTime - now;
+            
+            // Convert to hours, minutes, seconds
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Update the UI
+            $('#iftarCountdownHours').textContent = hours.toString().padStart(2, '0');
+            $('#iftarCountdownMinutes').textContent = minutes.toString().padStart(2, '0');
+            $('#iftarCountdownSeconds').textContent = seconds.toString().padStart(2, '0');
+        };
+    
+        // Update today's date
+        const updateTodayDate = () => {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            $('#todayDate').textContent = today.toLocaleDateString(undefined, options);
+            
+            // Example: Set Ramadan day (would need actual Hijri calendar conversion in production)
+            $('#ramadanDay').textContent = '10';
+        };
+    
+        // Form submission handlers
+        $('#dailyLogForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                date: $('#logDate').value,
+                fastingStatus: $('#fastingStatus').value,
+                fastingNote: $('#fastingNote').value,
+                suhoorTime: $('#suhoorTimeInput').value,
+                iftarTime: $('#iftarTimeInput').value,
+                quranJuz: $('#quranJuz').value,
+                quranPages: $('#quranPages').value,
+                taraweehStatus: $('#taraweehStatus').value,
+                taraweehRakaat: $('#taraweehRakaat').value,
+                charityAmount: $('#charityAmount').value,
+                moodRating: $('#moodRating').value,
+                reflection: $('#reflection').value
+            };
+            
+            saveToDb('dailyLogs', formData)
+                .then(() => {
+                    showToast('Daily log saved successfully');
+                    $('#dailyLogForm').reset();
+                })
+                .catch(error => {
+                    showToast('Error saving log', 'error');
+                    console.error('Error saving log:', error);
+                });
+        });
+    
+        $('#addDuaForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const duaData = {
+                arabic: $('#duaArabicText').value,
+                translation: $('#duaTranslationText').value,
+                reference: $('#duaReferenceText').value,
+                category: $('#duaCategory').value,
+                favorite: false,
+                dateAdded: new Date().toISOString()
+            };
+            
+            saveToDb('duas', duaData)
+                .then(() => {
+                    showToast('Dua added successfully');
+                    $('#addDuaForm').reset();
+                    closeModal('addDuaModal');
+                })
+                .catch(error => {
+                    showToast('Error adding dua', 'error');
+                    console.error('Error adding dua:', error);
+                });
+        });
+    
+        // Quick Log Quran Reading
+        $('#quickLogQuranBtn').addEventListener('click', () => {
+            const quranData = {
+                date: new Date().toISOString().split('T'),
+                juz: $('#quickLogJuz').value,
+                pages: $('#quickLogPages').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            saveToDb('quranProgress', quranData)
+                .then(() => {
+                    showToast('Quran reading logged successfully');
+                    $('#quickLogJuz').value = '';
+                    $('#quickLogPages').value = '';
+                })
+                .catch(error => {
+                    showToast('Error logging Quran reading', 'error');
+                    console.error('Error logging reading:', error);
+                });
+        });
+    
+        // Save Goal
+        $('#saveGoalBtn').addEventListener('click', () => {
+            const goalData = {
+                title: $('#goalTitle').value,
+                category: $('#goalCategory').value,
+                target: $('#goalTarget').value,
+                unit: $('#goalUnit').value,
+                current: 0,
+                dateCreated: new Date().toISOString(),
+                completed: false
+            };
+            
+            if (!goalData.title || !goalData.target || !goalData.unit) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+            
+            saveToDb('goals', goalData)
+                .then(() => {
+                    showToast('Goal saved successfully');
+                    $('#goalTitle').value = '';
+                    $('#goalTarget').value = '';
+                    $('#goalUnit').value = '';
+                })
+                .catch(error => {
+                    showToast('Error saving goal', 'error');
+                    console.error('Error saving goal:', error);
+                });
+        });
+    
+        // Save Daily Reflection
+        $('#saveDailyReflectionBtn').addEventListener('click', () => {
+            const reflectionData = {
+                type: 'daily',
+                date: $('#reflectionDate').value,
+                text: $('#dailyReflectionText').value,
+                mood: $('#reflectionMood').value,
+                keyLearning: $('#reflectionLearning').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (!reflectionData.date || !reflectionData.text) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+            
+            saveToDb('reflections', reflectionData)
+                .then(() => {
+                    showToast('Reflection saved successfully');
+                    $('#dailyReflectionText').value = '';
+                    $('#reflectionLearning').value = '';
+                })
+                .catch(error => {
+                    showToast('Error saving reflection', 'error');
+                    console.error('Error saving reflection:', error);
+                });
+        });
+    
+        // Save Settings
+        $('#saveSettingsBtn').addEventListener('click', () => {
+            const settings = {
+                id: 'userSettings',
+                darkMode: $('#darkModeToggle').value,
+                ramadanStartDate: $('#ramadanStartDate').value,
+                language: $('#languageSetting').value,
+                notifications: $('#notificationsToggle').value,
+                location: $('#userLocation').value
+            };
+            
+            saveToDb('settings', settings)
+                .then(() => {
+                    showToast('Settings saved successfully');
+                })
+                .catch(error => {
+                    showToast('Error saving settings', 'error');
+                    console.error('Error saving settings:', error);
+                });
+        });
+    
+        // Export Data
+        $('#exportDataBtn').addEventListener('click', () => {
+            Promise.all([
+                getFromDb('dailyLogs'),
+                getFromDb('quranProgress'),
+                getFromDb('goals'),
+                getFromDb('prayerTimes'),
+                getFromDb('duas'),
+                getFromDb('reflections'),
+                getFromDb('settings')
+            ])
+            .then(([dailyLogs, quranProgress, goals, prayerTimes, duas, reflections, settings]) => {
+                const exportData = {
+                    dailyLogs,
+                    quranProgress,
+                    goals,
+                    prayerTimes,
+                    duas,
+                    reflections,
+                    settings,
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                
+                const exportFileName = `ramadan_dashboard_export_${new Date().toISOString().split('T')}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileName);
+                linkElement.click();
+                
+                showToast('Data exported successfully');
+            })
+            .catch(error => {
+                showToast('Error exporting data', 'error');
+                console.error('Error exporting data:', error);
+            });
+        });
+    
+        // Import Data
+        $('#importDataBtn').addEventListener('click', () => {
+            const fileInput = $('#importFile');
+            const file = fileInput.files;
+            
+            if (!file) {
+                showToast('Please select a file to import', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    
+                    // Import each data store
+                    Promise.all([
+                        ...importData.dailyLogs.map(log => saveToDb('dailyLogs', log)),
+                        ...importData.quranProgress.map(progress => saveToDb('quranProgress', progress)),
+                        ...importData.goals.map(goal => saveToDb('goals', goal)),
+                        ...importData.prayerTimes.map(time => saveToDb('prayerTimes', time)),
+                        ...importData.duas.map(dua => saveToDb('duas', dua)),
+                        ...importData.reflections.map(reflection => saveToDb('reflections', reflection)),
+                        ...importData.settings.map(setting => saveToDb('settings', setting))
+                    ])
+                    .then(() => {
+                        showToast('Data imported successfully');
+                        fileInput.value = '';
+                    })
+                    .catch(error => {
+                        showToast('Error importing data', 'error');
+                        console.error('Error importing data:', error);
+                    });
+                } catch (error) {
+                    showToast('Invalid import file format', 'error');
+                    console.error('Invalid import file:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+        });
+    
+        // Reset All Data
+        $('#resetDataBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
+                // Delete the database
+                indexedDB.deleteDatabase(dbName);
+                
+                showToast('All data has been reset. Reloading the page...');
+                
+                // Reload the page after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        });
+    
+        // Initialize the app
+        const initApp = async () => {
+            try {
+                await initDB();
+                
+                // Set default date inputs to today
+                const today = new Date().toISOString().split('T')[0];
+                $$('input[type="date"]').forEach(input => {
+					input.value = today;
+				});
+                
+                // Initialize UI components
+                createStars();
+                initJuzGrid();
+                initSurahGrid();
+                initCalendar();
+                
+                // Start timers
+                updateTodayDate();
+                setInterval(updateIftarCountdown, 1000);
+                
+                // Load user settings
+                getFromDb('settings', 'userSettings')
+                    .then(settings => {
+                        if (settings) {
+                            $('#darkModeToggle').value = settings.darkMode || 'dark';
+                            $('#ramadanStartDate').value = settings.ramadanStartDate || '';
+                            $('#languageSetting').value = settings.language || 'en';
+                            $('#notificationsToggle').value = settings.notifications || 'enabled';
+                            $('#userLocation').value = settings.location || '';
+                            
+                            // Apply theme
+                            if (settings.darkMode === 'light') {
+                                document.body.classList.add('light-theme');
+                                $('#themeToggle i').className = 'fas fa-moon';
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error loading settings:', error));
+                
+            } catch (error) {
+                console.error('App initialization failed:', error);
+                showToast('Failed to initialize the app', 'error');
+            }
+        };
+    
+        // Start the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    
+        // Expose functions for inline event handlers
+        window.editDayLog = (day) => {
+            setActivePage('daily-log');
+            // Would need to load the specific day's data and populate the form
+            showToast(`Editing log for Ramadan day ${day}`);
+        };
+    </script>
+    </body>
+</html>

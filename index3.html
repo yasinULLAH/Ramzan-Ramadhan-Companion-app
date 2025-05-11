@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Yasin Ullah, Pakistani">
+    <meta name="description" content="Ramadan Dashboard: An offline planner and tracker for Ramadan activities.">
+    <title>Ramadan Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&family=Roboto:wght@300;400;700&family=Merriweather:wght@400;700&display=swap');
+
+        :root {
+            --primary-bg: #1a1a2e; /* Deep blue/purple - Default Dark Theme */
+            --secondary-bg: #16213e;
+            --card-bg: #2c3e50;
+            --text-color: #e0e0e0;
+            --heading-color: #f0c419; /* Gold accent */
+            --accent-color: #56cbf9; /* Light blue accent */
+            --accent-hover: #00a8cc;
+            --border-color: #4a4a6a;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --button-text-color: var(--primary-bg);
+
+            --font-heading: 'Merriweather', serif;
+            --font-body: 'Roboto', sans-serif;
+            --font-arabic: 'Noto Naskh Arabic', serif;
+        }
+
+        body.default-theme { /* Light Theme */
+            --primary-bg: #f4f4f9;
+            --secondary-bg: #ffffff;
+            --card-bg: #e9ecef;
+            --text-color: #333333;
+            --heading-color: #6a0dad; /* Purple */
+            --accent-color: #007bff;
+            --accent-hover: #0056b3;
+            --border-color: #ced4da;
+            --button-text-color: #ffffff;
+        }
+
+        body.festive-theme { /* Festive Dark Theme */
+            --primary-bg: #2c001e; /* Deep magenta */
+            --secondary-bg: #4a0034;
+            --card-bg: #6d214f;
+            --text-color: #f5d7e8;
+            --heading-color: #ffda77; /* Pale Gold */
+            --accent-color: #f78fb3; /* Pinkish */
+            --accent-hover: #e15f80;
+            --border-color: #8e44ad;
+            --button-text-color: var(--primary-bg);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        header {
+            background-color: var(--secondary-bg);
+            padding: 20px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-bottom: 4px solid var(--accent-color);
+            position: relative;
+        }
+        header h1::before { content: "🌙 "; font-size: 0.8em; }
+        header h1::after { content: " ✨"; font-size: 0.8em; }
+        header h1 {
+            color: var(--heading-color);
+            font-family: var(--font-heading);
+            margin: 0 0 15px 0;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        nav button {
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px; /* Pill shape */
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            font-size: 0.95em;
+        }
+        nav button:hover {
+            background-color: var(--accent-hover);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        nav button.active {
+            background-color: var(--heading-color);
+            color: var(--primary-bg); /* Ensure contrast */
+            box-shadow: 0 0 10px var(--heading-color);
+        }
+
+        main { padding: 10px 0; }
+
+        .tab-content {
+            display: none;
+            background-color: var(--secondary-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+        }
+        .tab-content.active { display: block; }
+        .tab-content h2 {
+            color: var(--heading-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-family: var(--font-heading);
+        }
+
+        form, fieldset {
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            background-color: var(--card-bg);
+            padding: 25px;
+        }
+        fieldset {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+        legend {
+            color: var(--accent-color);
+            font-weight: bold;
+            padding: 0 10px;
+            font-size: 1.1em;
+            font-family: var(--font-heading);
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        input[type="text"], input[type="date"], input[type="time"], input[type="number"],
+        textarea, select {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-size: 1em;
+            font-family: var(--font-body);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px alpha(var(--accent-color), 0.3);
+        }
+        textarea { resize: vertical; min-height: 90px; }
+        
+        button, input[type="button"] {
+            cursor: pointer;
+            font-family: var(--font-body);
+        }
+        button[type="submit"], .add-entry-btn, .action-btn,
+        #add-goal-btn, #add-dua-btn, #save-reflection-btn,
+        #backup-data-btn {
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.1s;
+            align-self: flex-start;
+        }
+        button[type="submit"]:hover, .add-entry-btn:hover, .action-btn:hover,
+        #add-goal-btn:hover, #add-dua-btn:hover, #save-reflection-btn:hover,
+        #backup-data-btn:hover {
+            background-color: var(--accent-hover);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        button.remove-entry-btn, .delete-btn {
+            background-color: var(--error-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        button.edit-btn {
+            background-color: var(--success-color);
+             color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+        .form-actions button { margin-right: 10px; }
+
+        .dynamic-entry {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px;
+            background-color: alpha(var(--primary-bg), 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .dynamic-entry input { width: calc(100% - 24px); }
+        .dynamic-entry .remove-entry-btn { grid-column: -1; justify-self: end; }
+
+
+        #goals-list ul, #duas-list ul { list-style: none; padding: 0; }
+        #goals-list li, #duas-list li {
+            background-color: var(--card-bg);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 6px solid var(--accent-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        #goals-list h4, #duas-list h4 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-family: var(--font-heading);
+        }
+        .dua-arabic {
+            font-size: 1.3em;
+            text-align: right;
+            direction: rtl;
+            font-family: var(--font-arabic);
+            color: var(--text-color);
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        #duas-list li p em { color: alpha(var(--text-color), 0.85); }
+        #duas-list li p small { color: alpha(var(--text-color), 0.7); }
+
+
+        #countdown-timers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        #suhoor-countdown, #iftar-countdown {
+            background: linear-gradient(145deg, var(--card-bg), var(--secondary-bg));
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3em;
+            color: var(--accent-color);
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        #quick-summary, #goal-progress-summary {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        #goal-progress-summary progress {
+            width: 100%;
+            height: 22px;
+            margin-top: 8px;
+            border-radius: 11px;
+            overflow: hidden; /* For Safari border-radius on progress */
+        }
+        #goal-progress-summary progress::-webkit-progress-bar {
+            background-color: var(--primary-bg);
+            border-radius: 11px;
+        }
+        #goal-progress-summary progress::-webkit-progress-value {
+            background-color: var(--accent-color);
+            border-radius: 11px;
+        }
+        #goal-progress-summary progress::-moz-progress-bar {
+            background-color: var(--accent-color);
+            border-radius: 11px;
+        }
+        #goal-progress-summary .goal-summary-item { margin-bottom: 15px; }
+        #goal-progress-summary .goal-summary-item strong { color: var(--heading-color); }
+
+
+        .theme-selector, #settings-section h3 { margin-bottom: 15px; }
+        #settings-section h3 { color: var(--heading-color); }
+        #restore-data-input {
+            display: block;
+            margin-top: 8px;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color); /* For the "No file chosen" text */
+        }
+        #restore-data-input::file-selector-button {
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            padding: 20px;
+            background-color: var(--secondary-bg);
+            border-radius: 8px 8px 0 0; /* Rounded top corners */
+            font-size: 0.9em;
+            color: var(--accent-color);
+            box-shadow: 0 -3px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.9em; }
+            nav button { padding: 9px 12px; font-size: 0.9em; }
+            .dynamic-entry { grid-template-columns: 1fr; } /* Stack inputs */
+            .dynamic-entry input { width: calc(100% - 24px); }
+            #countdown-timers { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.6em; }
+            nav { gap: 5px; }
+            nav button { padding: 8px 10px; font-size: 0.85em; }
+            .tab-content, form, fieldset { padding: 15px; }
+            input[type="text"], input[type="date"], input[type="time"], input[type="number"],
+            textarea, select { padding: 10px; width: calc(100% - 20px); }
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div id="app-container">
+        <header>
+            <h1>Ramadan Dashboard</h1>
+            <nav>
+                <button data-tab="dashboard" class="active">Dashboard</button>
+                <button data-tab="daily-log">Daily Log</button>
+                <button data-tab="goals">Goals</button>
+                <button data-tab="duas">Duas</button>
+                <button data-tab="reflection">Post-Ramadan</button>
+                <button data-tab="settings">Settings</button>
+            </nav>
+        </header>
+        <main>
+            <section id="dashboard-section" class="tab-content active">
+                <h2>Dashboard Overview</h2>
+                <div id="countdown-timers">
+                    <div id="suhoor-countdown">Suhoor: Loading...</div>
+                    <div id="iftar-countdown">Iftar: Loading...</div>
+                </div>
+                <div id="quick-summary">
+                    <p>Loading today's summary...</p>
+                </div>
+                <div id="goal-progress-summary">
+                    <h4>Goal Progress</h4>
+                    <p>Loading goal progress...</p>
+                </div>
+            </section>
+
+            <section id="daily-log-section" class="tab-content">
+                <h2>Daily Log for <input type="date" id="log-date-picker"></h2>
+                <form id="daily-log-form">
+                    <fieldset>
+                        <legend>Fasting & Times</legend>
+                        <label for="fasting-status">Fasting Status:</label>
+                        <select id="fasting-status" name="fasting_status">
+                            <option value="fasting">Fasting</option>
+                            <option value="not_fasting_travel">Not Fasting (Travel)</option>
+                            <option value="not_fasting_sick">Not Fasting (Sick)</option>
+                            <option value="not_fasting_menstruation">Not Fasting (Menstruation)</option>
+                            <option value="not_fasting_other">Not Fasting (Other)</option>
+                        </select>
+                        <label for="fasting-reason">Reason (if not fasting/other):</label>
+                        <input type="text" id="fasting-reason" name="fasting_reason">
+                        <label for="suhoor-time">Suhoor Time:</label>
+                        <input type="time" id="suhoor-time" name="suhoor_time">
+                        <label for="iftar-time">Iftar Time:</label>
+                        <input type="time" id="iftar-time" name="iftar_time">
+                    </fieldset>
+            
+                    <fieldset>
+                        <legend>Quran Reading</legend>
+                        <div id="quran-entries-container"></div>
+                        <button type="button" id="add-quran-log-entry-btn" class="add-entry-btn">Add Quran Entry</button>
+                    </fieldset>
+            
+                    <fieldset>
+                        <legend>Taraweeh</legend>
+                        <label for="taraweeh-status">Taraweeh:</label>
+                        <select id="taraweeh-status" name="taraweeh_status">
+                            <option value="yes_jamaah">Yes, with Jama'ah</option>
+                            <option value="yes_alone">Yes, Alone</option>
+                            <option value="no">No</option>
+                        </select>
+                        <label for="taraweeh-rakaat">Raka'at (if yes):</label>
+                        <input type="number" id="taraweeh-rakaat" name="taraweeh_rakaat" min="0">
+                    </fieldset>
+            
+                    <fieldset>
+                        <legend>Charitable Acts</legend>
+                        <div id="charity-entries-container"></div>
+                        <button type="button" id="add-charity-log-entry-btn" class="add-entry-btn">Add Charity Entry</button>
+                    </fieldset>
+            
+                    <fieldset>
+                        <legend>Mood & Reflections</legend>
+                        <label for="mood-rating">Mood (1-5, 5 is best):</label>
+                        <input type="number" id="mood-rating" name="mood_rating" min="1" max="5" step="1">
+                        <label for="reflections-text">Daily Reflections:</label>
+                        <textarea id="reflections-text" name="reflections_text" rows="4"></textarea>
+                    </fieldset>
+            
+                    <button type="submit">Save Log for <span id="log-form-date-display"></span></button>
+                </form>
+            </section>
+
+            <section id="goals-section" class="tab-content">
+                <h2>Ramadan Goals</h2>
+                <button id="add-goal-btn">Add New Goal</button>
+                <form id="goal-form" style="display:none;">
+                    <input type="hidden" id="goal-id">
+                    <div><label for="goal-title">Goal Title:</label><input type="text" id="goal-title" required></div>
+                    <div>
+                        <label for="goal-type">Goal Type:</label>
+                        <select id="goal-type">
+                            <option value="quran_khatm">Quran Khatm(s)</option>
+                            <option value="charity_amount">Charity Amount</option>
+                            <option value="custom_numeric">Custom Numeric Goal (e.g., Good Deeds)</option>
+                            <option value="custom_text">Custom Text/Milestone Goal</option>
+                        </select>
+                    </div>
+                    <div><label for="goal-target">Target:</label><input type="text" id="goal-target" placeholder="e.g., 2 (Khatms), 5000 (Amount), Read Surah Yasin daily"></div>
+                    <div><label for="goal-unit">Unit (for numeric goals):</label><input type="text" id="goal-unit" placeholder="e.g., Khatms, PKR, Pages, Deeds"></div>
+                    <div><label for="goal-current-progress">Current Progress (for custom numeric goals or initial offset):</label><input type="text" id="goal-current-progress" placeholder="e.g., 0.5, 1200"></div>
+                    <div class="form-actions">
+                        <button type="submit">Save Goal</button>
+                        <button type="button" id="cancel-goal-form">Cancel</button>
+                    </div>
+                </form>
+                <div id="goals-list" style="margin-top: 20px;"></div>
+            </section>
+
+            <section id="duas-section" class="tab-content">
+                <h2>Duas & Adhkar</h2>
+                <button id="add-dua-btn">Add New Dua</button>
+                <form id="dua-form" style="display:none;">
+                    <input type="hidden" id="dua-id">
+                    <div><label for="dua-title">Dua Title/Occasion:</label><input type="text" id="dua-title" required></div>
+                    <div><label for="dua-category">Category:</label><input type="text" id="dua-category" placeholder="e.g., Iftar, Suhoor, General"></div>
+                    <div><label for="dua-arabic">Arabic Text:</label><textarea id="dua-arabic" rows="4" dir="rtl" style="text-align:right; font-size: 1.2em;"></textarea></div>
+                    <div><label for="dua-translation">Translation:</label><textarea id="dua-translation" rows="4"></textarea></div>
+                    <div><label for="dua-reference">Reference (Hadith, Quran Ayah):</label><input type="text" id="dua-reference"></div>
+                     <div class="form-actions">
+                        <button type="submit">Save Dua</button>
+                        <button type="button" id="cancel-dua-form">Cancel</button>
+                    </div>
+                </form>
+                <div id="duas-list" style="margin-top: 20px;"></div>
+            </section>
+
+            <section id="reflection-section" class="tab-content">
+                <h2>Post-Ramadan Reflection</h2>
+                <p>Take some time after Ramadan to reflect on your journey, achievements, and areas for continued growth.</p>
+                <textarea id="post-ramadan-text" rows="12" placeholder="Write your reflections here..."></textarea>
+                <button id="save-reflection-btn" style="margin-top:10px;">Save Reflection</button>
+            </section>
+
+            <section id="settings-section" class="tab-content">
+                <h2>Settings & Data Management</h2>
+                <div class="theme-selector">
+                    <label for="theme-select">Theme:</label>
+                    <select id="theme-select">
+                        <option value="dark-theme">Dark (Default)</option>
+                        <option value="default-theme">Light</option>
+                        <option value="festive-theme">Festive Dark</option>
+                    </select>
+                </div>
+                <h3>Data Management</h3>
+                <p>Backup your data regularly. Restore will overwrite existing data.</p>
+                <button id="backup-data-btn">Backup Data (JSON)</button>
+                <br><br>
+                <label for="restore-data-input">Restore Data (JSON):</label>
+                <input type="file" id="restore-data-input" accept=".json">
+            </section>
+        </main>
+        <footer>
+            <p>© <span id="currentYear"></span> Ramadan Dashboard by Yasin Ullah. May your Ramadan be blessed!</p>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Ramadan Dashboard by Yasin Ullah, Pakistani.");
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    const DB_NAME = 'RamadanDashboardDB';
+    const DB_VERSION = 1; // Increment if schema changes
+    let db;
+
+    const tabs = document.querySelectorAll('nav button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const logDatePicker = document.getElementById('log-date-picker');
+    
+    // --- IndexedDB Utility Functions ---
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = (event) => reject('Database error: ' + event.target.errorCode);
+            request.onsuccess = (event) => { db = event.target.result; resolve(db); };
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains('dailyLogs')) {
+                    db.createObjectStore('dailyLogs', { keyPath: 'date' });
+                }
+                if (!db.objectStoreNames.contains('goals')) {
+                    db.createObjectStore('goals', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('duas')) {
+                    db.createObjectStore('duas', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('postRamadanReflection')) {
+                    db.createObjectStore('postRamadanReflection', { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains('appConfig')) {
+                    db.createObjectStore('appConfig', { keyPath: 'key' });
+                }
+            };
+        });
+    }
+
+    function dbOperation(storeName, mode, operation) {
+        return new Promise((resolve, reject) => {
+            if (!db) { reject("DB not initialized"); return; }
+            try {
+                const transaction = db.transaction([storeName], mode);
+                const store = transaction.objectStore(storeName);
+                operation(store, resolve, reject);
+                transaction.oncomplete = () => {}; // Can resolve here if operation is guaranteed done
+                transaction.onerror = (event) => reject(`Transaction error on ${storeName}: ${event.target.error}`);
+            } catch (error) {
+                reject(`DB Operation Error: ${error.message}`);
+            }
+        });
+    }
+
+    const addObject = (storeName, object) => dbOperation(storeName, 'readwrite', (store, resolve, reject) => {
+        const request = store.add(object);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+    const getObject = (storeName, key) => dbOperation(storeName, 'readonly', (store, resolve, reject) => {
+        const request = store.get(key);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+    const getAllObjects = (storeName) => dbOperation(storeName, 'readonly', (store, resolve, reject) => {
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+    const updateObject = (storeName, object) => dbOperation(storeName, 'readwrite', (store, resolve, reject) => {
+        const request = store.put(object);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+    const deleteObject = (storeName, key) => dbOperation(storeName, 'readwrite', (store, resolve, reject) => {
+        const request = store.delete(key);
+        request.onsuccess = () => resolve();
+        request.onerror = (e) => reject(e.target.error);
+    });
+    const clearStore = (storeName) => dbOperation(storeName, 'readwrite', (store, resolve, reject) => {
+        const request = store.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = (e) => reject(e.target.error);
+    });
+
+    // --- Tab Navigation ---
+    function switchTab(tabName) {
+        tabContents.forEach(content => content.classList.toggle('active', content.id === `${tabName}-section`));
+        tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.tab === tabName));
+        
+        // Load data for the activated tab
+        if (tabName === 'dashboard') loadDashboardData();
+        else if (tabName === 'daily-log') loadDailyLogForDate(logDatePicker.value || getTodayDateString());
+        else if (tabName === 'goals') loadGoals();
+        else if (tabName === 'duas') loadDuas();
+        else if (tabName === 'reflection') loadReflection();
+    }
+    tabs.forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
+
+    // --- Date Helpers ---
+    const getTodayDateString = () => new Date().toISOString().split('T')[0];
+
+    // --- Main Initialization ---
+    async function main() {
+        try {
+            await initDB();
+            if (logDatePicker) {
+                logDatePicker.value = getTodayDateString();
+                document.getElementById('log-form-date-display').textContent = logDatePicker.value;
+                logDatePicker.addEventListener('change', () => {
+                    document.getElementById('log-form-date-display').textContent = logDatePicker.value;
+                    loadDailyLogForDate(logDatePicker.value);
+                });
+            }
+            setupEventListeners();
+            await loadTheme();
+            switchTab('dashboard'); // Default tab
+        } catch (error) {
+            console.error("Initialization failed:", error);
+            alert("Error initializing application: " + error);
+        }
+    }
+
+    function setupEventListeners() {
+        document.getElementById('daily-log-form')?.addEventListener('submit', saveDailyLog);
+        document.getElementById('add-quran-log-entry-btn')?.addEventListener('click', () => addQuranEntryToForm());
+        document.getElementById('add-charity-log-entry-btn')?.addEventListener('click', () => addCharityEntryToForm());
+
+        document.getElementById('add-goal-btn')?.addEventListener('click', toggleGoalForm);
+        document.getElementById('goal-form')?.addEventListener('submit', saveGoal);
+        document.getElementById('cancel-goal-form')?.addEventListener('click', toggleGoalForm);
+        
+        document.getElementById('add-dua-btn')?.addEventListener('click', toggleDuaForm);
+        document.getElementById('dua-form')?.addEventListener('submit', saveDua);
+        document.getElementById('cancel-dua-form')?.addEventListener('click', toggleDuaForm);
+
+        document.getElementById('save-reflection-btn')?.addEventListener('click', saveReflection);
+        document.getElementById('theme-select')?.addEventListener('change', (e) => applyTheme(e.target.value));
+        document.getElementById('backup-data-btn')?.addEventListener('click', backupData);
+        document.getElementById('restore-data-input')?.addEventListener('change', handleRestoreData);
+    }
+
+    // --- Daily Log ---
+    const dailyLogFormFields = ['fasting-status', 'fasting-reason', 'suhoor-time', 'iftar-time', 'taraweeh-status', 'taraweeh-rakaat', 'mood-rating', 'reflections-text'];
+    async function saveDailyLog(event) {
+        event.preventDefault();
+        const date = logDatePicker.value;
+        if (!date) { alert('Please select a date.'); return; }
+
+        const logData = { date };
+        dailyLogFormFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) logData[id.replace(/-/g, '_')] = el.type === 'checkbox' ? el.checked : el.value;
+        });
+
+        logData.quranRead = Array.from(document.querySelectorAll('#quran-entries-container .quran-entry')).map(div => ({
+            surah: div.querySelector('[name="quran-surah"]').value,
+            startAyah: div.querySelector('[name="quran-start-ayah"]').value,
+            endAyah: div.querySelector('[name="quran-end-ayah"]').value,
+            pages: div.querySelector('[name="quran-pages"]').value,
+            notes: div.querySelector('[name="quran-notes"]').value,
+        }));
+        logData.charitableActs = Array.from(document.querySelectorAll('#charity-entries-container .charity-entry')).map(div => ({
+            description: div.querySelector('[name="charity-description"]').value,
+            amount: parseFloat(div.querySelector('[name="charity-amount"]').value) || 0,
+        }));
+
+        try {
+            await updateObject('dailyLogs', logData);
+            alert('Daily log saved!');
+            loadDailyLogForDate(date); // Refresh display
+            loadDashboardData(); // Update dashboard summary
+        } catch (error) { console.error('Error saving daily log:', error); alert('Failed to save daily log: ' + error); }
+    }
+
+    async function loadDailyLogForDate(date) {
+        if (!date) date = getTodayDateString();
+        logDatePicker.value = date;
+        document.getElementById('log-form-date-display').textContent = date;
+        document.getElementById('daily-log-form').reset();
+        document.getElementById('quran-entries-container').innerHTML = '';
+        document.getElementById('charity-entries-container').innerHTML = '';
+
+        try {
+            const logData = await getObject('dailyLogs', date);
+            if (logData) {
+                dailyLogFormFields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const key = id.replace(/-/g, '_');
+                        if (el.type === 'checkbox') el.checked = logData[key] || false;
+                        else el.value = logData[key] || '';
+                    }
+                });
+                (logData.quranRead || []).forEach(addQuranEntryToForm);
+                (logData.charitableActs || []).forEach(addCharityEntryToForm);
+            }
+            if (document.querySelectorAll('#quran-entries-container .quran-entry').length === 0) addQuranEntryToForm();
+            if (document.querySelectorAll('#charity-entries-container .charity-entry').length === 0) addCharityEntryToForm();
+        } catch (error) { console.error('Error loading daily log:', error); }
+    }
+
+    function createDynamicEntryField(containerId, className, htmlGenerator, data = {}) {
+        const container = document.getElementById(containerId);
+        const entryDiv = document.createElement('div');
+        entryDiv.className = className + ' dynamic-entry';
+        entryDiv.innerHTML = htmlGenerator(data);
+        container.appendChild(entryDiv);
+        entryDiv.querySelector('.remove-entry-btn').addEventListener('click', () => entryDiv.remove());
+    }
+    const addQuranEntryToForm = (data = {}) => createDynamicEntryField('quran-entries-container', 'quran-entry', d => `
+        <input type="text" name="quran-surah" placeholder="Surah" value="${d.surah || ''}">
+        <input type="text" name="quran-start-ayah" placeholder="Start Ayah" value="${d.startAyah || ''}">
+        <input type="text" name="quran-end-ayah" placeholder="End Ayah" value="${d.endAyah || ''}">
+        <input type="number" name="quran-pages" placeholder="Pages" value="${d.pages || ''}" min="0">
+        <input type="text" name="quran-notes" placeholder="Notes" value="${d.notes || ''}">
+        <button type="button" class="remove-entry-btn">- Remove</button>`, data);
+    const addCharityEntryToForm = (data = {}) => createDynamicEntryField('charity-entries-container', 'charity-entry', d => `
+        <input type="text" name="charity-description" placeholder="Description" value="${d.description || ''}">
+        <input type="number" name="charity-amount" placeholder="Amount" step="0.01" value="${d.amount || ''}" min="0">
+        <button type="button" class="remove-entry-btn">- Remove</button>`, data);
+
+    // --- Goals ---
+    const goalForm = document.getElementById('goal-form');
+    const goalsListEl = document.getElementById('goals-list');
+    const toggleGoalForm = (show = null) => {
+        const display = show === null ? (goalForm.style.display === 'none' ? 'block' : 'none') : (show ? 'block' : 'none');
+        goalForm.style.display = display;
+        if (display === 'block') {
+            document.getElementById('goal-id').value = '';
+            goalForm.reset();
+            document.getElementById('goal-title').focus();
+        }
+    };
+    async function saveGoal(event) {
+        event.preventDefault();
+        const id = document.getElementById('goal-id').value;
+        const goalData = {
+            title: document.getElementById('goal-title').value,
+            type: document.getElementById('goal-type').value,
+            target: document.getElementById('goal-target').value,
+            unit: document.getElementById('goal-unit').value,
+            currentProgress: document.getElementById('goal-current-progress').value || 0,
+            createdAt: new Date().toISOString(),
+            isAchieved: false
+        };
+        if (!goalData.title || !goalData.target) { alert('Please fill Goal Title and Target.'); return; }
+        if (['quran_khatm', 'charity_amount', 'custom_numeric'].includes(goalData.type)) {
+            goalData.currentProgress = parseFloat(goalData.currentProgress) || 0;
+        }
+        try {
+            if (id) { goalData.id = parseInt(id); await updateObject('goals', goalData); }
+            else { await addObject('goals', goalData); }
+            alert(`Goal ${id ? 'updated' : 'added'}!`);
+            toggleGoalForm(false); loadGoals(); loadDashboardData();
+        } catch (error) { console.error('Error saving goal:', error); alert('Failed to save goal: ' + error); }
+    }
+    async function loadGoals() {
+        try {
+            const goals = await getAllObjects('goals');
+            displayGoals(goals);
+        } catch (error) { console.error('Error loading goals:', error); goalsListEl.innerHTML = '<p>Error loading goals.</p>'; }
+    }
+    function displayGoals(goals) {
+        goalsListEl.innerHTML = (!goals || goals.length === 0) ? '<p>No goals set yet.</p>' : '';
+        if (!goals || goals.length === 0) return;
+        const ul = document.createElement('ul');
+        goals.forEach(goal => {
+            const li = document.createElement('li');
+            let progressText = `${goal.currentProgress || 0} ${goal.unit || ''}`;
+            if (goal.type === 'quran_khatm' || goal.type === 'charity_amount') progressText = "(Auto-calculated on Dashboard)";
+            
+            li.innerHTML = `
+                <h4>${goal.title} <small>(${goal.type.replace(/_/g, ' ')})</small></h4>
+                <p>Target: ${goal.target} ${goal.unit || ''}</p>
+                <p>Progress: ${progressText}</p>
+                <p><small>Set on: ${new Date(goal.createdAt).toLocaleDateString()}</small></p>
+                <button class="edit-btn edit-goal-btn" data-id="${goal.id}">Edit</button>
+                <button class="delete-btn delete-goal-btn" data-id="${goal.id}">Delete</button>
+                ${goal.type === 'custom_numeric' ? `<button class="action-btn update-progress-btn" data-id="${goal.id}">Update Progress</button>` : ''}
+            `;
+            ul.appendChild(li);
+        });
+        goalsListEl.appendChild(ul);
+        goalsListEl.querySelectorAll('.edit-goal-btn').forEach(b => b.addEventListener('click', (e) => editGoal(e.target.dataset.id)));
+        goalsListEl.querySelectorAll('.delete-goal-btn').forEach(b => b.addEventListener('click', (e) => deleteGoal(e.target.dataset.id)));
+        goalsListEl.querySelectorAll('.update-progress-btn').forEach(b => b.addEventListener('click', (e) => promptUpdateGoalProgress(e.target.dataset.id)));
+    }
+    async function editGoal(idStr) {
+        const goal = await getObject('goals', parseInt(idStr));
+        if (goal) {
+            Object.keys(goal).forEach(key => {
+                const el = document.getElementById(`goal-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`);
+                if (el) el.value = goal[key];
+            });
+            document.getElementById('goal-id').value = goal.id; // Ensure ID is set
+            toggleGoalForm(true);
+        }
+    }
+    async function deleteGoal(idStr) {
+        if (confirm('Delete this goal?')) {
+            try { await deleteObject('goals', parseInt(idStr)); alert('Goal deleted.'); loadGoals(); loadDashboardData(); }
+            catch (error) { console.error('Error deleting goal:', error); alert('Failed to delete goal.'); }
+        }
+    }
+    async function promptUpdateGoalProgress(idStr) {
+        const id = parseInt(idStr);
+        const goal = await getObject('goals', id);
+        if (!goal || goal.type !== 'custom_numeric') return;
+        const newProg = prompt(`Update progress for "${goal.title}" (Target: ${goal.target} ${goal.unit || ''}):`, goal.currentProgress);
+        if (newProg !== null) {
+            const numProg = parseFloat(newProg);
+            if (!isNaN(numProg)) {
+                goal.currentProgress = numProg;
+                goal.isAchieved = (parseFloat(goal.target) > 0 && numProg >= parseFloat(goal.target));
+                if(goal.isAchieved) alert(`Masha'Allah! Goal "${goal.title}" achieved!`);
+                try { await updateObject('goals', goal); loadGoals(); loadDashboardData(); }
+                catch (error) { console.error("Error updating goal progress:", error); alert("Failed to update progress.");}
+            } else alert("Invalid number for progress.");
+        }
+    }
+
+    // --- Duas ---
+    const duaForm = document.getElementById('dua-form');
+    const duasListEl = document.getElementById('duas-list');
+    const toggleDuaForm = (show = null) => {
+        const display = show === null ? (duaForm.style.display === 'none' ? 'block' : 'none') : (show ? 'block' : 'none');
+        duaForm.style.display = display;
+        if (display === 'block') {
+            document.getElementById('dua-id').value = '';
+            duaForm.reset();
+            document.getElementById('dua-title').focus();
+        }
+    };
+    async function saveDua(event) {
+        event.preventDefault();
+        const id = document.getElementById('dua-id').value;
+        const duaData = {
+            title: document.getElementById('dua-title').value,
+            category: document.getElementById('dua-category').value,
+            arabicText: document.getElementById('dua-arabic').value,
+            translation: document.getElementById('dua-translation').value,
+            reference: document.getElementById('dua-reference').value,
+        };
+        if (!duaData.title) { alert('Please enter Dua Title.'); return; }
+        try {
+            if (id) { duaData.id = parseInt(id); await updateObject('duas', duaData); }
+            else { await addObject('duas', duaData); }
+            alert(`Dua ${id ? 'updated' : 'added'}!`);
+            toggleDuaForm(false); loadDuas();
+        } catch (error) { console.error('Error saving dua:', error); alert('Failed to save dua: ' + error); }
+    }
+    async function loadDuas() {
+        try {
+            const duas = await getAllObjects('duas');
+            displayDuas(duas);
+        } catch (error) { console.error('Error loading duas:', error); duasListEl.innerHTML = '<p>Error loading Duas.</p>'; }
+    }
+    function displayDuas(duas) {
+        duasListEl.innerHTML = (!duas || duas.length === 0) ? '<p>No Duas added yet.</p>' : '';
+        if (!duas || duas.length === 0) return;
+        const ul = document.createElement('ul');
+        duas.forEach(dua => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <h4>${dua.title} ${dua.category ? `<small>(${dua.category})</small>` : ''}</h4>
+                ${dua.arabicText ? `<p class="dua-arabic">${dua.arabicText.replace(/\n/g, '<br>')}</p>` : ''}
+                ${dua.translation ? `<p><em>${dua.translation.replace(/\n/g, '<br>')}</em></p>` : ''}
+                ${dua.reference ? `<p><small>Reference: ${dua.reference}</small></p>` : ''}
+                <button class="edit-btn edit-dua-btn" data-id="${dua.id}">Edit</button>
+                <button class="delete-btn delete-dua-btn" data-id="${dua.id}">Delete</button>
+            `;
+            ul.appendChild(li);
+        });
+        duasListEl.appendChild(ul);
+        duasListEl.querySelectorAll('.edit-dua-btn').forEach(b => b.addEventListener('click', (e) => editDua(e.target.dataset.id)));
+        duasListEl.querySelectorAll('.delete-dua-btn').forEach(b => b.addEventListener('click', (e) => deleteDua(e.target.dataset.id)));
+    }
+    async function editDua(idStr) {
+        const dua = await getObject('duas', parseInt(idStr));
+        if (dua) {
+            Object.keys(dua).forEach(key => {
+                const el = document.getElementById(`dua-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`);
+                if (el) el.value = dua[key];
+            });
+            document.getElementById('dua-id').value = dua.id;
+            toggleDuaForm(true);
+        }
+    }
+    async function deleteDua(idStr) {
+        if (confirm('Delete this Dua?')) {
+            try { await deleteObject('duas', parseInt(idStr)); alert('Dua deleted.'); loadDuas(); }
+            catch (error) { console.error('Error deleting dua:', error); alert('Failed to delete dua.'); }
+        }
+    }
+
+    // --- Dashboard ---
+    let suhoorInterval, iftarInterval;
+    async function loadDashboardData() {
+        const today = getTodayDateString();
+        const logData = await getObject('dailyLogs', today);
+        const suhoorEl = document.getElementById('suhoor-countdown');
+        const iftarEl = document.getElementById('iftar-countdown');
+
+        clearInterval(suhoorInterval); clearInterval(iftarInterval);
+        suhoorEl.textContent = 'Suhoor: Set time in Daily Log';
+        iftarEl.textContent = 'Iftar: Set time in Daily Log';
+
+        if (logData?.suhoorTime) startCountdown(logData.suhoorTime, 'Suhoor', suhoorEl, suhoorInterval);
+        if (logData?.iftarTime) startCountdown(logData.iftarTime, 'Iftar', iftarEl, iftarInterval);
+        
+        const quickSummaryEl = document.getElementById('quick-summary');
+        if (logData) {
+            const totalPages = (logData.quranRead || []).reduce((s, e) => s + (parseInt(e.pages) || 0), 0);
+            const totalCharity = (logData.charitableActs || []).reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+            quickSummaryEl.innerHTML = `<h4>Today's Log (${today})</h4>
+                <p><strong>Fasting:</strong> ${logData.fasting_status || 'Not set'}</p>
+                <p><strong>Quran Read:</strong> ${totalPages} pages</p>
+                <p><strong>Charity:</strong> ${totalCharity.toFixed(2)}</p>`;
+        } else {
+            quickSummaryEl.innerHTML = `<p>No log entry for today (${today}). Add one in the Daily Log tab!</p>`;
+        }
+        await displayGoalProgressSummary();
+    }
+    function startCountdown(timeStr, label, element, intervalVar) {
+        const [h, m] = timeStr.split(':').map(Number);
+        const target = new Date(); target.setHours(h, m, 0, 0);
+        
+        const update = () => {
+            const now = new Date();
+            let diff = target.getTime() - now.getTime();
+            if (diff < 0) { // Time passed for today
+                // Could check if it's Suhoor for "tomorrow" (e.g. if current time is past today's Iftar)
+                // For simplicity, just show passed.
+                element.textContent = `${label}: Time has passed for today.`;
+                clearInterval(intervalVar);
+                return;
+            }
+            const hrs = String(Math.floor(diff / 3600000)).padStart(2,'0');
+            const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+            const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+            element.textContent = `${label} in: ${hrs}:${mins}:${secs}`;
+        };
+        update();
+        if (label === 'Suhoor') suhoorInterval = setInterval(update, 1000);
+        else iftarInterval = setInterval(update, 1000);
+    }
+    async function displayGoalProgressSummary() {
+        const goals = await getAllObjects('goals');
+        const dailyLogs = await getAllObjects('dailyLogs');
+        const summaryContainer = document.getElementById('goal-progress-summary');
+        summaryContainer.innerHTML = '<h4>Goal Progress</h4>';
+        if (!goals || goals.length === 0) { summaryContainer.innerHTML += '<p>No goals set yet.</p>'; return; }
+
+        goals.forEach(goal => {
+            let current = 0, targetVal = parseFloat(goal.target);
+            if (goal.type === 'quran_khatm') {
+                const pagesPerKhatm = 604; // Approx
+                const totalPagesRead = dailyLogs.reduce((sum, log) => sum + (log.quranRead || []).reduce((s, qr) => s + (parseInt(qr.pages) || 0), 0), 0);
+                current = totalPagesRead / pagesPerKhatm;
+            } else if (goal.type === 'charity_amount') {
+                current = dailyLogs.reduce((sum, log) => sum + (log.charitableActs || []).reduce((s, ca) => s + (parseFloat(ca.amount) || 0), 0), 0);
+            } else if (goal.type === 'custom_numeric') {
+                current = parseFloat(goal.currentProgress) || 0;
+            } else { // custom_text
+                summaryContainer.innerHTML += `<div class="goal-summary-item"><strong>${goal.title}</strong>: ${goal.currentProgress || 'Not started'} / ${goal.target} ${goal.unit || ''}</div>`;
+                return;
+            }
+            const percentage = (targetVal > 0 && !isNaN(targetVal)) ? (current / targetVal) * 100 : 0;
+            summaryContainer.innerHTML += `
+                <div class="goal-summary-item">
+                    <strong>${goal.title}</strong> (${current.toFixed(2)} / ${targetVal.toFixed(2)} ${goal.unit || ''})
+                    <progress value="${current}" max="${(targetVal > 0 && !isNaN(targetVal)) ? targetVal : 1}"></progress> 
+                    <span>${percentage.toFixed(1)}%</span>
+                </div>`;
+        });
+    }
+
+    // --- Post-Ramadan Reflection ---
+    const REFLECTION_ID = 'main_reflection_2024'; // Example: make it year specific if needed
+    async function saveReflection() {
+        const text = document.getElementById('post-ramadan-text').value;
+        try {
+            await updateObject('postRamadanReflection', { id: REFLECTION_ID, text: text, year: new Date().getFullYear() });
+            alert('Reflection saved!');
+        } catch (error) { console.error('Error saving reflection:', error); alert('Failed to save reflection: ' + error); }
+    }
+    async function loadReflection() {
+        try {
+            const reflection = await getObject('postRamadanReflection', REFLECTION_ID);
+            if (reflection) document.getElementById('post-ramadan-text').value = reflection.text;
+        } catch (error) { console.error('Error loading reflection:', error); }
+    }
+
+    // --- Settings & Backup/Restore ---
+    async function applyTheme(themeName) {
+        document.body.className = themeName;
+        try { await updateObject('appConfig', { key: 'theme', value: themeName }); }
+        catch (error) { console.error('Error saving theme:', error); }
+    }
+    async function loadTheme() {
+        try {
+            const themeConfig = await getObject('appConfig', 'theme');
+            const themeToApply = (themeConfig && themeConfig.value) ? themeConfig.value : 'dark-theme';
+            applyTheme(themeToApply);
+            const themeSelect = document.getElementById('theme-select');
+            if (themeSelect) themeSelect.value = themeToApply;
+        } catch (error) { console.error('Error loading theme:', error); applyTheme('dark-theme'); }
+    }
+    async function backupData() {
+        if (!confirm("Download all data as a JSON file?")) return;
+        try {
+            const backupObj = { backupVersion: 1, backupDate: new Date().toISOString() };
+            const stores = ['dailyLogs', 'goals', 'duas', 'postRamadanReflection', 'appConfig'];
+            for (const storeName of stores) { backupObj[storeName] = await getAllObjects(storeName); }
+            
+            const jsonString = JSON.stringify(backupObj, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `RamadanDashboard_Backup_${getTodayDateString()}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('Backup successful!');
+        } catch (error) { console.error('Backup failed:', error); alert('Backup failed: ' + error); }
+    }
+    async function handleRestoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!confirm("Restoring data will ERASE all current data. Proceed?")) { event.target.value = null; return; }
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const backup = JSON.parse(e.target.result);
+                const stores = ['dailyLogs', 'goals', 'duas', 'postRamadanReflection', 'appConfig'];
+                if (!stores.every(s => backup[s] !== undefined)) throw new Error("Invalid backup file format.");
+
+                for (const storeName of stores) { await clearStore(storeName); } // Clear existing data
+                for (const storeName of stores) { // Restore data
+                    for (const item of backup[storeName]) { await addObject(storeName, item); }
+                }
+                alert('Data restored successfully! App will reload.');
+                location.reload();
+            } catch (error) {
+                console.error('Restore failed:', error);
+                alert('Restore failed: ' + error);
+                event.target.value = null;
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    main(); // Start the application
+});
+</script>
+</body>
+</html>
